@@ -15,7 +15,7 @@ allprojects {
 
  ```gradel
 dependencies {
-	        implementation 'com.github.colourmoon:image-picker:$VersonName' // here VersionName = vv1.0.0
+	        implementation 'com.github.colourmoon:image-picker:$VersonName' // here VersionName = v1.0.0
 	}
   ```
   
