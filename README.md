@@ -28,7 +28,7 @@ dependencies {
         setContentView(R.layout.activity_main)
         
               val imagePicker = CMImagePicker(this, launcher)//here you have to pass the context and ResultImageCallback
-            //do not initialize the object in here intelligize it exactly as it shown is the example
+            //do not initialize the object in here initialize it exactly as it shown is the example
             imagePicker
                 .allowCrop(false)//by default its false
                 .allowCompress(true,90)//by default its false and the compress percentage is only applicable between 60-100
