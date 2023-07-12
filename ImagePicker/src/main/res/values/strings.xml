@@ -1,0 +1,7 @@
+<resources>
+    <string name="gallery">Gallery</string>
+    <string name="camera">Camera</string>
+    <string name="hint_image">This is a image</string>
+    <string name="this_image_is_not_able_to_cropped_try_changing_the_rotation">This Image is not Able to cropped try changing the rotation</string>
+    <string name="some_error_occur_try_again">Some Error Occur Try Again!!</string>
+</resources>
