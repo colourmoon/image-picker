@@ -41,7 +41,7 @@ dependencies {
          
          
          
-   // here you have make a object of teh ResultImage to get the result from the image picker
+   // here you have make a object of the ResultImage to get the result from the image picker
 privite val launcher=object : ResultImage {
     override val result: ActivityResultLauncher<Intent>  = registerForActivityResult(
     ActivityResultContracts.StartActivityForResult()
