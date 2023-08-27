@@ -19,7 +19,7 @@ class CMImagePicker(
 ) {
     private var crop: Boolean = false
     private var cameraOnly: Boolean = false
-    private var galleyOnly: Boolean = false
+    private var galleryOnly: Boolean = false
     private var compress: Boolean = false
     private var compressionPercentage: Int = 100
 
@@ -34,8 +34,8 @@ class CMImagePicker(
         return this
     }
 
-    fun allowGalleyOnly(galleyOnly: Boolean): CMImagePicker {
-        this.galleyOnly = galleyOnly
+    fun allowgalleryOnly(galleryOnly: Boolean): CMImagePicker {
+        this.galleryOnly = galleryOnly
         return this
     }
 
@@ -46,9 +46,9 @@ class CMImagePicker(
     }
 
     fun start() {
-        val selection = if (cameraOnly && !galleyOnly) {
+        val selection = if (cameraOnly && !galleryOnly) {
             CAMERA
-        } else if (galleyOnly && !cameraOnly) {
+        } else if (galleryOnly && !cameraOnly) {
             GALLERY
         } else {
             BOTH
