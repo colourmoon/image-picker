@@ -34,7 +34,7 @@ class CMImagePicker(
         return this
     }
 
-    fun allowgalleryOnly(galleryOnly: Boolean): CMImagePicker {
+    fun allowGalleryOnly(galleryOnly: Boolean): CMImagePicker {
         this.galleryOnly = galleryOnly
         return this
     }

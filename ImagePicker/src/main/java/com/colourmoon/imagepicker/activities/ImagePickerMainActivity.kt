@@ -172,7 +172,8 @@ class ImagePickerMainActivity : AppCompatActivity() {
     }
 
     private fun openGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
         galleryLauncher.launch(intent)
     }
 
@@ -313,7 +314,11 @@ class ImagePickerMainActivity : AppCompatActivity() {
                     setResultAndFinish(imagePath, imageFile, resultIntent)
                 }
             } else {
-                Toast.makeText(this, getString(R.string.some_error_occur_try_again), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.some_error_occur_try_again),
+                    Toast.LENGTH_SHORT
+                ).show()
                 dialog.dismiss()
                 finish()
             }
