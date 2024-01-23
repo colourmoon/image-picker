@@ -5,8 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -14,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -30,10 +29,14 @@ import com.colourmoon.imagepicker.utils.RESULT_IMAGE_PATH
 import com.colourmoon.imagepicker.utils.SELECTION_TYPE
 import com.colourmoon.imagepicker.utils.WANT_COMPRESSION
 import com.colourmoon.imagepicker.utils.WANT_CROP
+import com.colourmoon.imagepicker.utils.compreser.Compressor
 import com.tcm.imagepicker.R
 import com.tcm.imagepicker.databinding.ImagPickerDialogueBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.io.File
-import java.io.FileOutputStream
 import java.util.Date
 import java.util.Objects
 
@@ -115,24 +118,26 @@ class ImagePickerMainActivity : AppCompatActivity() {
                     } else {
                         val resultIntent = Intent()
                         if (wantCompress && compressPercentage > 50 && compressPercentage < 100) {
-                            try {
-                                val compressedFile =
-                                    compress(
-                                        compressPercentage,
-                                        BitmapFactory.decodeFile(path)
-                                    )
-                                if (compressedFile.exists()) {
-                                    setResultAndFinish(
-                                        Uri.fromFile(compressedFile).path,
-                                        compressedFile,
-                                        resultIntent
-                                    )
-                                } else {
-                                    setResultAndFinish(path, file, resultIntent)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                try {
+                                    val compressedFile =
+                                        compress(
+                                            compressPercentage,
+                                            file
+                                        )
+                                    if (compressedFile.exists()) {
+                                        setResultAndFinish(
+                                            Uri.fromFile(compressedFile).path,
+                                            compressedFile,
+                                            resultIntent
+                                        )
+                                    } else {
+                                        setResultAndFinish(path, file, resultIntent)
 
+                                    }
+                                } catch (e: Exception) {
+                                    setResultAndFinish(path, file, resultIntent)
                                 }
-                            } catch (e: Exception) {
-                                setResultAndFinish(path, file, resultIntent)
                             }
                         } else {
                             setResultAndFinish(path, file, resultIntent)
@@ -212,10 +217,41 @@ class ImagePickerMainActivity : AppCompatActivity() {
                 result.data?.getSerializableExtra(RESULT_IMAGE_FILE) as File
             }
             val resultIntent = Intent()
-            resultIntent.putExtra(RESULT_IMAGE_PATH, imagePath)
-            resultIntent.putExtra(RESULT_IMAGE_FILE, imageFile)
-            setResult(Activity.RESULT_OK, resultIntent)
-            finish()
+            if (wantCompress && compressPercentage > 50 && compressPercentage < 100) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val compressedFile =
+                            if (imageFile?.exists() == true) {
+                                compress(
+                                    compressPercentage,
+                                    imageFile
+                                )
+                            } else {
+                                imageFile
+                            }
+                        if (compressedFile?.exists()==true) {
+                            setResultAndFinish(
+                                Uri.fromFile(compressedFile).path,
+                                compressedFile,
+                                resultIntent
+                            )
+                        } else {
+                            setResultAndFinish(compressedFile?.path, compressedFile, resultIntent)
+
+                        }
+                    } catch (e: Exception) {
+                        setResultAndFinish(imagePath, imageFile, resultIntent)
+                    }
+                }
+            } else {
+                setResultAndFinish(imagePath, imageFile, resultIntent)
+            }
+
+//            val resultIntent = Intent()
+//            resultIntent.putExtra(RESULT_IMAGE_PATH, imagePath)
+//            resultIntent.putExtra(RESULT_IMAGE_FILE, imageFile)
+//            setResult(Activity.RESULT_OK, resultIntent)
+//            finish()
         } else {
             dialog.dismiss()
             finish()
@@ -258,7 +294,33 @@ class ImagePickerMainActivity : AppCompatActivity() {
                         cropImage(path)
                     } else {
                         val resultIntent = Intent()
-                        setResultAndFinish(cameraImageUri?.path, file, resultIntent)
+                        if (wantCompress && compressPercentage > 50 && compressPercentage < 100) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                try {
+                                    val compressedFile =
+                                        compress(
+                                            compressPercentage,
+                                            file
+                                        )
+                                    if (compressedFile.exists()) {
+                                        setResultAndFinish(
+                                            Uri.fromFile(compressedFile).path,
+                                            compressedFile,
+                                            resultIntent
+                                        )
+                                    } else {
+                                        setResultAndFinish(path, file, resultIntent)
+
+                                    }
+                                } catch (e: Exception) {
+                                    setResultAndFinish(path, file, resultIntent)
+                                }
+                            }
+                        } else {
+                            setResultAndFinish(path, file, resultIntent)
+                        }
+//                        val resultIntent = Intent()
+//                        setResultAndFinish(cameraImageUri?.path, file, resultIntent)
                     }
                 }
 
@@ -268,7 +330,7 @@ class ImagePickerMainActivity : AppCompatActivity() {
             }
         }
 
-    private fun setResultAndFinish(path: String?, file: File, resultIntent: Intent) {
+    private fun setResultAndFinish(path: String?, file: File?, resultIntent: Intent) {
         resultIntent.putExtra(RESULT_IMAGE_PATH, path)
         resultIntent.putExtra(RESULT_IMAGE_FILE, file)
         setResult(Activity.RESULT_OK, resultIntent)
@@ -284,13 +346,21 @@ class ImagePickerMainActivity : AppCompatActivity() {
     }
 
 
-    private fun compress(percentage: Int, bitmap: Bitmap?): File {
-        val file1 = File.createTempFile(Date().time.toString(), ".jpg")
-        val fileOutputStream = FileOutputStream(file1)
-        bitmap?.compress(Bitmap.CompressFormat.JPEG, percentage, fileOutputStream)
-        fileOutputStream.flush()
-        fileOutputStream.close()
-        return file1
+    private suspend fun compress(percentage: Int, bitmap: File): File {
+
+        val job = CoroutineScope(Dispatchers.IO).async {
+            Compressor.compress(this@ImagePickerMainActivity, bitmap)
+        }
+        return job.await().also {
+            Log.e("compress", "yes the compressed worked ", )
+        }
+
+//        val file1 = File.createTempFile(Date().time.toString(), ".jpg")
+//        val fileOutputStream = FileOutputStream(file1)
+//        bitmap?.compress(Bitmap.CompressFormat.JPEG, percentage, fileOutputStream)
+//        fileOutputStream.flush()
+//        fileOutputStream.close()
+//        return bitmap
     }
 
 
@@ -311,7 +381,31 @@ class ImagePickerMainActivity : AppCompatActivity() {
                     cropImage(imagePath ?: "")
                 } else {
                     val resultIntent = Intent()
-                    setResultAndFinish(imagePath, imageFile, resultIntent)
+                    if (wantCompress && compressPercentage > 50 && compressPercentage < 100) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            try {
+                                val compressedFile =
+                                    compress(
+                                        compressPercentage,
+                                        imageFile
+                                    )
+                                if (compressedFile.exists()) {
+                                    setResultAndFinish(
+                                        Uri.fromFile(compressedFile).path,
+                                        compressedFile,
+                                        resultIntent
+                                    )
+                                } else {
+                                    setResultAndFinish(imagePath, imageFile, resultIntent)
+
+                                }
+                            } catch (e: Exception) {
+                                setResultAndFinish(imagePath, imageFile, resultIntent)
+                            }
+                        }
+                    } else {
+                        setResultAndFinish(imagePath, imageFile, resultIntent)
+                    }
                 }
             } else {
                 Toast.makeText(

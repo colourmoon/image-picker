@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.*
-import android.graphics.Bitmap.CompressFormat
 import android.hardware.camera2.*
 import android.media.AudioManager
 import android.media.MediaPlayer
@@ -317,28 +316,6 @@ class CameraActivity : AppCompatActivity() {
     }
 
 
-    fun reverseByHorizontal(original: File): File {
-        val bitmap = BitmapFactory.decodeFile(original.path)
-
-        val photo = File.createTempFile(Date().time.toString() + "", ".jpg")
-        val bos = ByteArrayOutputStream()
-        val matrix = Matrix()
-        matrix.preScale(-1f, 1f)
-        matrix.postRotate(90f)
-        val rotatedBitmap = Bitmap.createBitmap(
-            bitmap, 0, 0, bitmap.width,
-            bitmap.height, matrix, false
-        )
-        rotatedBitmap.compress(CompressFormat.PNG, 0 /*ignored for PNG*/, bos)
-        val bitmapData: ByteArray = bos.toByteArray()
-
-        val fos = FileOutputStream(photo)
-        fos.write(bitmapData)
-        fos.flush()
-        fos.close()
-        return photo
-
-    }
 
 
 }
