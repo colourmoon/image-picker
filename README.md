@@ -13,7 +13,7 @@ Are you an Android developer struggling with the intricacies of image selection,
 
 6. **Robust Error Handling:** The library includes comprehensive error handling to ensure smooth user interactions. If an issue arises during the image selection process, error handling mechanisms are in place to inform users gracefully.
 
-7. **Compressed Images:** Image size can impact app performance and user experience. With built-in compression options, you can choose the compression level that suits your app's needs while maintaining image quality.
+7. **Compressed Images:** Image size can impact app performance and user experience. With built-in compression options.
 
 8. **User-friendly Design:** The library's user interface is designed to be intuitive and user-friendly. Users can navigate image selection, cropping, and other processes with ease, enhancing their interaction with your app.
 
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         val imagePicker = CMImagePicker(this, launcher)
         imagePicker
             .allowCrop(false)
-            .allowCompress(true, 90)
+            .allowCompress(true)
             .allowGalleryOnly(false)
             .allowCameraOnly(false)
             .start()
@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity() {
 val imagePicker = CMImagePicker(this, launcher)
 imagePicker
     .allowCrop(false) // Enable or disable cropping (default: false)
-    .allowCompress(true, 90) // Enable compression with quality percentage (default: false, quality: 60-100)
+    .allowCompress(true) // Enable compression (default: false)
     .allowGalleryOnly(false) // Allow only gallery selection (default: both camera and gallery)
     .allowCameraOnly(false) // Allow only camera usage (default: both camera and gallery)
     .start() // Launch the image picker
