@@ -42,7 +42,7 @@ dependencies {
 ```
 Replace `$VersonName` with the actual version you want to use, for example:
 ```kotlin
-implementation 'com.github.colourmoon:image-picker:v1.0.1'
+implementation 'com.github.colourmoon:image-picker:v1.0.2'
 ```
 
 ## Step 3. Implement ResultImage in your Activity/Fragment and Call CMImagePicker
