@@ -5,7 +5,6 @@ import android.content.Intent
 import com.colourmoon.imagepicker.activities.ImagePickerMainActivity
 import com.colourmoon.imagepicker.utils.BOTH
 import com.colourmoon.imagepicker.utils.CAMERA
-import com.colourmoon.imagepicker.utils.COMPRESSION_PERCENTAGE
 import com.colourmoon.imagepicker.utils.GALLERY
 import com.colourmoon.imagepicker.utils.ResultImage
 import com.colourmoon.imagepicker.utils.SELECTION_TYPE
@@ -21,7 +20,6 @@ class CMImagePicker(
     private var cameraOnly: Boolean = false
     private var galleryOnly: Boolean = false
     private var compress: Boolean = false
-    private var compressionPercentage: Int = 100
 
 
     fun allowCrop(crop: Boolean): CMImagePicker {
@@ -39,9 +37,8 @@ class CMImagePicker(
         return this
     }
 
-    fun allowCompress(compress: Boolean, compressionPercentage: Int): CMImagePicker {
+    fun allowCompress(compress: Boolean): CMImagePicker {
         this.compress = compress
-        this.compressionPercentage = compressionPercentage
         return this
     }
 
@@ -62,7 +59,6 @@ class CMImagePicker(
                 putExtra(WANT_CROP, crop)
                 putExtra(SELECTION_TYPE, selection)
                 putExtra(WANT_COMPRESSION, compress)
-                putExtra(COMPRESSION_PERCENTAGE, compressionPercentage)
             }
         )
     }

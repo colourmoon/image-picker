@@ -6,12 +6,7 @@ import com.colourmoon.imagepicker.utils.compreser.determineImageRotation
 import com.colourmoon.imagepicker.utils.compreser.overWrite
 import java.io.File
 
-/**
- * Created on : January 25, 2020
- * Author     : zetbaitsu
- * Name       : Zetra
- * GitHub     : https://github.com/zetbaitsu
- */
+
 class DefaultConstraint(
         private val width: Int = 612,
         private val height: Int = 816,

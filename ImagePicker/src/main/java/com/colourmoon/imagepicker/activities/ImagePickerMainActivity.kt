@@ -43,7 +43,6 @@ import java.util.Objects
 
 class ImagePickerMainActivity : AppCompatActivity() {
     private var from = ""
-    private var compressPercentage = 100
     private var wantCrop: Boolean = false
     private var wantCompress: Boolean = false
     private var cameraImageUri: Uri? = null
@@ -60,7 +59,6 @@ class ImagePickerMainActivity : AppCompatActivity() {
         window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         wantCrop = intent.getBooleanExtra(WANT_CROP, false)
         wantCompress = intent.getBooleanExtra(WANT_COMPRESSION, false)
-        compressPercentage = intent.getIntExtra(COMPRESSION_PERCENTAGE, 100)
         when (intent.getStringExtra(SELECTION_TYPE) ?: "") {
             CAMERA -> {
                 checkCameraPermission()
@@ -117,12 +115,11 @@ class ImagePickerMainActivity : AppCompatActivity() {
                         cropImage(path)
                     } else {
                         val resultIntent = Intent()
-                        if (wantCompress && compressPercentage > 50 && compressPercentage < 100) {
+                        if (wantCompress ) {
                             CoroutineScope(Dispatchers.IO).launch {
                                 try {
                                     val compressedFile =
                                         compress(
-                                            compressPercentage,
                                             file
                                         )
                                     if (compressedFile.exists()) {
@@ -197,10 +194,32 @@ class ImagePickerMainActivity : AppCompatActivity() {
 
 
     private fun cropImage(filePath: String) {
+        if (wantCompress ) {
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val compressedFile =
+                        compress(
+                            File(filePath)
+                        )
+                    if (compressedFile.exists()) {
+                        startForResult.launch(Intent(this@ImagePickerMainActivity, CroppingActivity::class.java).also {
+                            it.putExtra(FILE_PATH,  compressedFile.absolutePath)
+                        })
+                    }
+                } catch (_: Exception) {
+                    startForResult.launch(Intent(this@ImagePickerMainActivity, CroppingActivity::class.java).also {
+                        it.putExtra(FILE_PATH, filePath)
+                    })
+                }
+            }
+        } else {
+            startForResult.launch(Intent(this, CroppingActivity::class.java).also {
+                it.putExtra(FILE_PATH, filePath)
+            })
+        }
+
 //        startForResult.launch(Intent(this, CroppingActivity::class.java).also {
-        startForResult.launch(Intent(this, CroppingActivity::class.java).also {
-            it.putExtra(FILE_PATH, filePath)
-        })
+
 //
     }
 
@@ -217,35 +236,37 @@ class ImagePickerMainActivity : AppCompatActivity() {
                 result.data?.getSerializableExtra(RESULT_IMAGE_FILE) as File
             }
             val resultIntent = Intent()
-            if (wantCompress && compressPercentage > 50 && compressPercentage < 100) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        val compressedFile =
-                            if (imageFile?.exists() == true) {
-                                compress(
-                                    compressPercentage,
-                                    imageFile
-                                )
-                            } else {
-                                imageFile
-                            }
-                        if (compressedFile?.exists()==true) {
-                            setResultAndFinish(
-                                Uri.fromFile(compressedFile).path,
-                                compressedFile,
-                                resultIntent
-                            )
-                        } else {
-                            setResultAndFinish(compressedFile?.path, compressedFile, resultIntent)
+            setResultAndFinish(imagePath, imageFile, resultIntent)
 
-                        }
-                    } catch (e: Exception) {
-                        setResultAndFinish(imagePath, imageFile, resultIntent)
-                    }
-                }
-            } else {
-                setResultAndFinish(imagePath, imageFile, resultIntent)
-            }
+            /*  if (wantCompress && compressPercentage > 50 && compressPercentage < 100) {
+                  CoroutineScope(Dispatchers.IO).launch {
+                      try {
+                          val compressedFile =
+                              if (imageFile?.exists() == true) {
+                                  compress(
+                                      compressPercentage,
+                                      imageFile
+                                  )
+                              } else {
+                                  imageFile
+                              }
+                          if (compressedFile?.exists() == true) {
+                              setResultAndFinish(
+                                  Uri.fromFile(compressedFile).path,
+                                  compressedFile,
+                                  resultIntent
+                              )
+                          } else {
+                              setResultAndFinish(compressedFile?.path, compressedFile, resultIntent)
+
+                          }
+                      } catch (e: Exception) {
+                          setResultAndFinish(imagePath, imageFile, resultIntent)
+                      }
+                  }
+              } else {
+                  setResultAndFinish(imagePath, imageFile, resultIntent)
+              }*/
 
 //            val resultIntent = Intent()
 //            resultIntent.putExtra(RESULT_IMAGE_PATH, imagePath)
@@ -294,12 +315,11 @@ class ImagePickerMainActivity : AppCompatActivity() {
                         cropImage(path)
                     } else {
                         val resultIntent = Intent()
-                        if (wantCompress && compressPercentage > 50 && compressPercentage < 100) {
+                        if (wantCompress ) {
                             CoroutineScope(Dispatchers.IO).launch {
                                 try {
                                     val compressedFile =
                                         compress(
-                                            compressPercentage,
                                             file
                                         )
                                     if (compressedFile.exists()) {
@@ -346,13 +366,13 @@ class ImagePickerMainActivity : AppCompatActivity() {
     }
 
 
-    private suspend fun compress(percentage: Int, bitmap: File): File {
+    private suspend fun compress( bitmap: File): File {
 
         val job = CoroutineScope(Dispatchers.IO).async {
             Compressor.compress(this@ImagePickerMainActivity, bitmap)
         }
         return job.await().also {
-            Log.e("compress", "yes the compressed worked ", )
+            Log.e("compress", "yes the compressed worked ")
         }
 
 //        val file1 = File.createTempFile(Date().time.toString(), ".jpg")
@@ -381,12 +401,11 @@ class ImagePickerMainActivity : AppCompatActivity() {
                     cropImage(imagePath ?: "")
                 } else {
                     val resultIntent = Intent()
-                    if (wantCompress && compressPercentage > 50 && compressPercentage < 100) {
+                    if (wantCompress) {
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
                                 val compressedFile =
                                     compress(
-                                        compressPercentage,
                                         imageFile
                                     )
                                 if (compressedFile.exists()) {

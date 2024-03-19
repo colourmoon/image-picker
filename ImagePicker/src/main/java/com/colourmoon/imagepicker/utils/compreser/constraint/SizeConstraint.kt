@@ -4,12 +4,7 @@ import com.colourmoon.imagepicker.utils.compreser.loadBitmap
 import com.colourmoon.imagepicker.utils.compreser.overWrite
 import java.io.File
 
-/**
- * Created on : January 24, 2020
- * Author     : zetbaitsu
- * Name       : Zetra
- * GitHub     : https://github.com/zetbaitsu
- */
+
 class SizeConstraint(
         private val maxFileSize: Long,
         private val stepSize: Int = 10,

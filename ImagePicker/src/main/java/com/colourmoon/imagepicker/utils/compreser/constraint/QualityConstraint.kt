@@ -4,12 +4,7 @@ import com.colourmoon.imagepicker.utils.compreser.loadBitmap
 import com.colourmoon.imagepicker.utils.compreser.overWrite
 import java.io.File
 
-/**
- * Created on : January 25, 2020
- * Author     : zetbaitsu
- * Name       : Zetra
- * GitHub     : https://github.com/zetbaitsu
- */
+
 class QualityConstraint(private val quality: Int) : Constraint {
     private var isResolved = false
 

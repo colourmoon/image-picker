@@ -2,12 +2,7 @@ package com.colourmoon.imagepicker.utils.compreser.constraint
 
 import java.io.File
 
-/**
- * Created on : January 25, 2020
- * Author     : zetbaitsu
- * Name       : Zetra
- * GitHub     : https://github.com/zetbaitsu
- */
+
 class DestinationConstraint(private val destination: File) : Constraint {
     override fun isSatisfied(imageFile: File): Boolean {
         return imageFile.absolutePath == destination.absolutePath

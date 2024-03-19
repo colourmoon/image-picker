@@ -9,12 +9,6 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.coroutines.CoroutineContext
 
-/**
- * Created on : January 22, 2020
- * Author     : zetbaitsu
- * Name       : Zetra
- * GitHub     : https://github.com/zetbaitsu
- */
 object Compressor {
      suspend fun compress(
          context: Context,

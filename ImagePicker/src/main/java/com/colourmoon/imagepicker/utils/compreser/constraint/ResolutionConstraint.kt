@@ -7,12 +7,7 @@ import com.colourmoon.imagepicker.utils.compreser.determineImageRotation
 import com.colourmoon.imagepicker.utils.compreser.overWrite
 import java.io.File
 
-/**
- * Created on : January 24, 2020
- * Author     : zetbaitsu
- * Name       : Zetra
- * GitHub     : https://github.com/zetbaitsu
- */
+
 class ResolutionConstraint(private val width: Int, private val height: Int) : Constraint {
 
     override fun isSatisfied(imageFile: File): Boolean {

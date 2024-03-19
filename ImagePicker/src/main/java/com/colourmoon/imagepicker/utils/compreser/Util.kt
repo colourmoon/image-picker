@@ -8,12 +8,7 @@ import android.media.ExifInterface
 import java.io.File
 import java.io.FileOutputStream
 
-/**
- * Created on : January 24, 2020
- * Author     : zetbaitsu
- * Name       : Zetra
- * GitHub     : https://github.com/zetbaitsu
- */
+
 private val separator = File.separator
 
 private fun cachePath(context: Context) = "${context.cacheDir.path}${separator}compressor$separator"
